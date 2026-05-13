@@ -1,117 +1,66 @@
-# 🔢 Counter App
+# Counter App (Next.js + Express)
 
-A modern, production-ready counter app built with **Next.js 14**, **SQLite**, **Nodemailer**, and **Chart.js**.
+A multi-user SaaS counter platform separated into a React/Next.js Frontend and an Express/Node.js Backend.
 
----
+## 📂 Project Structure
 
-## ✨ Features
-
-| Feature | Details |
-|---|---|
-| **Persistent Counter** | SQLite-backed — survives restarts |
-| **Dark / Light Mode** | System-aware, toggle in header |
-| **Weekly Email Report** | Auto-sent every Sunday 8 PM via SMTP |
-| **Statistics Chart** | Daily increments vs decrements (last 7 days) |
-| **PDF Export** | Client-side jsPDF report download |
-| **Mobile-Friendly** | Responsive layout, large touch targets |
-| **Manual Report Trigger** | "Send Report" button in the UI |
+- **/frontend**: React + Next.js frontend application.
+- **/backend**: Node.js + Express backend server.
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Local Development
 
-### 1. Install dependencies
-
+### 1. Setup Backend
 ```bash
-cd CounterApp
+cd backend
 npm install
+# Create the .env file from the example
+cp .env.example .env
 ```
+*Edit the `.env` file to include your actual MongoDB Atlas connection string and Gmail App Password.*
 
-### 2. Configure environment variables
-
+Run the backend:
 ```bash
-cp .env.local.example .env.local
-# Edit .env.local with your SMTP credentials
+node server.js
+# Runs on http://localhost:5000
 ```
 
-#### Gmail Setup (recommended)
-1. Enable **2-Step Verification** on your Google Account
-2. Go to **Google Account → Security → App Passwords**
-3. Create an App Password for "Mail"
-4. Use that 16-character password as `SMTP_PASS`
+### 2. Setup Frontend
+```bash
+cd frontend
+npm install
+# Create the .env.local file
+cp .env.example .env.local
+```
+*Edit the `.env.local` to point to the backend if needed (defaults to `http://localhost:5000`).*
 
-### 3. Run the development server
-
+Run the frontend:
 ```bash
 npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-### 4. Build for production
-
-```bash
-npm run build
-npm start
+# Runs on http://localhost:3000
 ```
 
 ---
 
-## 📁 Project Structure
+## 🚀 Deployment Instructions
 
-```
-CounterApp/
-├── server.js                  # Custom server (starts cron scheduler)
-├── data/
-│   └── counter.db             # SQLite database (auto-created)
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx         # Root layout + dark mode init
-│   │   ├── page.tsx           # Main UI page
-│   │   ├── globals.css        # Design tokens + utility styles
-│   │   └── api/
-│   │       ├── counter/       # GET/POST counter value
-│   │       ├── stats/         # GET daily & weekly stats
-│   │       └── send-report/   # POST trigger email
-│   ├── components/
-│   │   └── StatsChart.tsx     # Chart.js bar chart
-│   └── lib/
-│       ├── db.ts              # SQLite queries (better-sqlite3)
-│       ├── email.ts           # Nodemailer weekly report
-│       └── scheduler.ts       # node-cron job (Sun 20:00)
-└── .env.local.example         # Environment variable template
-```
+### Deploying the Backend (Render / Railway)
 
----
+1. Create a new Web Service on **Render** or **Railway**.
+2. Connect your GitHub repository.
+3. Set the **Root Directory** to `backend`.
+4. Set the **Build Command** to `npm install`.
+5. Set the **Start Command** to `node server.js`.
+6. Add all the Environment Variables from `backend/.env.example` into the service settings (Dashboard).
+7. Deploy! Copy the live backend URL (e.g. `https://my-backend.onrender.com`).
 
-## 🌍 Deployment
+### Deploying the Frontend (Vercel)
 
-### Vercel
-> Note: Vercel's serverless functions don't support `node-cron`. Use **Render** instead for full cron support.
+1. Go to your **Vercel** dashboard and Import the GitHub repository.
+2. In the project settings, set the **Root Directory** to `frontend`.
+3. Add the following Environment Variable:
+   - `NEXT_PUBLIC_API_URL` = `[YOUR_LIVE_BACKEND_URL_FROM_ABOVE]`
+4. Click **Deploy**.
 
-### Render
-1. Push to GitHub
-2. Create a **Web Service** on [render.com](https://render.com)
-3. Build command: `npm install && npm run build`
-4. Start command: `npm start`
-5. Add environment variables in Render's dashboard
-
----
-
-## 🔧 Environment Variables
-
-| Variable | Description | Default |
-|---|---|---|
-| `SMTP_HOST` | SMTP server hostname | `smtp.gmail.com` |
-| `SMTP_PORT` | SMTP port | `587` |
-| `SMTP_SECURE` | Use TLS (`true` / `false`) | `false` |
-| `SMTP_USER` | SMTP username / email | — |
-| `SMTP_PASS` | SMTP password / App Password | — |
-| `EMAIL_FROM` | Sender display address | Same as `SMTP_USER` |
-| `EMAIL_TO` | Report recipient address | — |
-| `PORT` | Server port | `3000` |
-
----
-
-## 📜 License
-MIT
+*Note: You must also update the `FRONTEND_URL` environment variable in your **Backend** service settings to point to your new Vercel URL so that CORS works securely.*
