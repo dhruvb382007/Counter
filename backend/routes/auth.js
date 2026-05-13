@@ -68,4 +68,7 @@ router.get('/me', verifyToken, (req, res) => {
   res.json({ success: true, user: { id: req.user.userId, name: req.user.name, email: req.user.email } });
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  verifyToken
+};
